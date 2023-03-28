@@ -1,0 +1,108 @@
+Create a todo-list using node.js. 
+
+Use the node JS (Web API) for the create, update, & delete requests.
+Use the localStorage library for your temporary storage.
+
+
+Use this Todo List HTML and JavaScript: 
+<!DOCTYPE html>
+<html>
+<head>
+	<title>To Do List</title>
+	<link rel="stylesheet" href="style.css">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Shadows+Into+Light&display=swap" rel="stylesheet">
+</head>
+
+<body>
+	<div class="container mt-5">
+		<h1>To Do List:</h1>
+		<div class="input-container">
+			<input type="text" id="new-task" placeholder="Add new item...">
+			<button id="add-task-btn">Add</button>
+		</div>
+		<ul id="task-list"></ul>
+	</div>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+	<script src="script.js"></script>
+</body>
+</html>
+
+
+JavaScript:
+const newTaskInput = document.getElementById('new-task');
+const addTaskButton = document.getElementById('add-task-btn');
+const taskList = document.getElementById('task-list');
+
+let taskCounter = 0;
+
+function addTask() {
+	if (newTaskInput.value.trim() === '') {
+		alert('Please enter a task.');
+		return;
+	}
+
+	if (taskCounter >= 5) {
+		addTaskButton.disabled = true;
+	}
+
+	const taskItem = document.createElement('li');
+	taskItem.classList.add('task-item');
+	taskItem.innerHTML = `
+		<input type="checkbox">
+		<input type="text" value="${newTaskInput.value}">
+		<button class="edit-btn">Edit</button>
+		<button class="save-btn">Save</button>
+		<button class="delete-btn">Delete</button>
+	`;
+	taskList.appendChild(taskItem);
+
+	newTaskInput.value = '';
+	taskCounter++;
+}
+
+function deleteTask(e) {
+	if (e.target.classList.contains('delete-btn')) {
+		e.target.parentNode.remove();
+		taskCounter--;
+
+		if (taskCounter < 5) {
+			addTaskButton.disabled = false;
+		}
+	}
+}
+
+function editTask(e) {
+	if (e.target.classList.contains('edit-btn')) {
+		const taskItem = e.target.parentNode;
+		const taskInput = taskItem.querySelector('input[type="text"]');
+		const saveButton = taskItem.querySelector('.save-btn');
+		taskInput.disabled = false;
+		saveButton.disabled = false;
+		taskInput.focus();
+	}
+}
+
+function saveTask(e) {
+	if (e.target.classList.contains('save-btn')) {
+		const taskItem = e.target.parentNode;
+		const taskInput = taskItem.querySelector('input[type="text"]');
+		taskInput.disabled = true;
+		e.target.disabled = true;
+	}
+}
+
+function toggleDone(e) {
+	if (e.target.tagName === 'INPUT' && e.target.type === 'checkbox') {
+		const taskItem = e.target.parentNode;
+		taskItem.classList.toggle('done');
+	}
+}
+
+addTaskButton.addEventListener('click', addTask);
+taskList.addEventListener('click', deleteTask);
+taskList.addEventListener('click', editTask);
+taskList.addEventListener('click', saveTask);
+taskList.addEventListener('click', toggleDone);
